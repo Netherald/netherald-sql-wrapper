@@ -23,7 +23,11 @@ class SqlWrapper {
         try {
             Class.forName("com.mysql.jdbc.Driver")
             logger.info("Connecting to SQL...")
-            sqlConnection = DriverManager.getConnection(ip, username, password);
+            if(password == "") {
+                sqlConnection = DriverManager.getConnection(ip, username, null)
+            } else {
+                sqlConnection = DriverManager.getConnection(ip, username, password)
+            }
             logger.info("Connected to ${ip}:${port}")
         } catch (e: ClassNotFoundException) {
             throw IllegalStateException("Driver not found!")
@@ -57,7 +61,7 @@ class SqlWrapper {
             val list = JSONParser().parse(result.getString("users")) as JsonArray
             val listParsed = ArrayList<User>()
             for (str in list) {
-                listParsed.add(User(str.toFormattedString(), null))
+                listParsed.add(User(str.toFormattedString(), null, null))
             }
             return Guild(result.getString("name"), result.getInt("id"), listParsed, result.getString("description"))
         }
@@ -73,7 +77,26 @@ class SqlWrapper {
         val result = statement.executeQuery()
 
         while (result.next()) {
-            return User(uuid.toString(), getGuild(result.getInt("guild")))
+            val list = JSONParser().parse(result.getString("friends")) as JsonArray
+            val listParsed = ArrayList<User>()
+            for (str in list) {
+                listParsed.add(getUserWithoutFriends(UUID.fromString(str.toString())))
+            }
+            return User(uuid.toString(), getGuild(result.getInt("guild")), null)
+        }
+        throw IllegalAccessException("No user found!")
+    }
+
+    fun getUserWithoutFriends(uuid: UUID) : User {
+        if (sqlConnection.isClosed)
+            throw IllegalStateException("SQL Connection is Closed!")
+        val statement = sqlConnection.prepareStatement("SELECT FROM users WHERE uuid=?")
+        statement.setString(0, uuid.toString())
+
+        val result = statement.executeQuery()
+
+        while (result.next()) {
+            return User(uuid.toString(), getGuild(result.getInt("guild")), null)
         }
         throw IllegalAccessException("No user found!")
     }
