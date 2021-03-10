@@ -21,7 +21,7 @@ class SqlWrapper {
         this.logger = logger
         logger.info("Loading driver...")
         try {
-            Class.forName("com.mysql.jdbc.Driver")
+            Class.forName("com.mysql.cj.jdbc.Driver")
             logger.info("Connecting to SQL...")
             if(password == "") {
                 sqlConnection = DriverManager.getConnection(ip, username, null)
