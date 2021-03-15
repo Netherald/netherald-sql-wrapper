@@ -52,7 +52,7 @@ class SqlWrapper {
     fun getGuild(id: Int) : Guild {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT FROM netherald.guilds WHERE id=?")
+        val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.guilds WHERE id=?")
         statement.setInt(1, id)
 
         val result = statement.executeQuery()
@@ -90,7 +90,7 @@ class SqlWrapper {
     fun getUserWithoutFriends(uuid: UUID) : User {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT FROM netherald.users WHERE uuid=?")
+        val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.users WHERE uuid=?")
         statement.setString(1, uuid.toString())
 
         val result = statement.executeQuery()
