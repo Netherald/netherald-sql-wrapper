@@ -52,8 +52,8 @@ class SqlWrapper {
     fun getGuild(id: Int) : Guild {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT FROM guilds WHERE id=?")
-        statement.setInt(0, id)
+        val statement = sqlConnection.prepareStatement("SELECT FROM netherald.guilds WHERE id=?")
+        statement.setInt(1, id)
 
         val result = statement.executeQuery()
 
@@ -71,8 +71,8 @@ class SqlWrapper {
     fun getUser(uuid: UUID) : User {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT FROM users WHERE uuid=?")
-        statement.setString(0, uuid.toString())
+        val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.users WHERE uuid=?")
+        statement.setString(1, uuid.toString())
 
         val result = statement.executeQuery()
 
@@ -82,7 +82,7 @@ class SqlWrapper {
             for (str in list) {
                 listParsed.add(getUserWithoutFriends(UUID.fromString(str.toString())))
             }
-            return User(uuid.toString(), getGuild(result.getInt("guild")), null)
+            return User(uuid.toString(), getGuild(result.getInt("guild")), listParsed)
         }
         throw IllegalAccessException("No user found!")
     }
@@ -90,8 +90,8 @@ class SqlWrapper {
     fun getUserWithoutFriends(uuid: UUID) : User {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT FROM users WHERE uuid=?")
-        statement.setString(0, uuid.toString())
+        val statement = sqlConnection.prepareStatement("SELECT FROM netherald.users WHERE uuid=?")
+        statement.setString(1, uuid.toString())
 
         val result = statement.executeQuery()
 
