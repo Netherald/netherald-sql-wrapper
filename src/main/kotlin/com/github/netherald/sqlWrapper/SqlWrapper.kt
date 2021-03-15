@@ -2,7 +2,7 @@ package com.github.netherald.sqlWrapper
 
 import com.github.netherald.sqlWrapper.models.Guild
 import com.github.netherald.sqlWrapper.models.User
-import com.mysql.cj.xdevapi.JsonArray
+import org.json.simple.JSONArray
 import org.json.simple.parser.JSONParser
 import java.lang.IllegalStateException
 import java.sql.Connection
@@ -58,10 +58,10 @@ class SqlWrapper {
         val result = statement.executeQuery()
 
         while (result.next()) {
-            val list = JSONParser().parse(result.getString("users")) as JsonArray
+            val list = JSONParser().parse(result.getString("users")) as JSONArray
             val listParsed = ArrayList<User>()
             for (str in list) {
-                listParsed.add(User(str.toFormattedString(), null, null))
+                listParsed.add(User(str as String, null, null))
             }
             return Guild(result.getString("name"), result.getInt("id"), listParsed, result.getString("description"))
         }
