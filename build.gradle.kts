@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.netherald"
-version = "1.8-SNAPSHOT"
+version = "1.9-SNAPSHOT"
 
 repositories {
     mavenCentral()

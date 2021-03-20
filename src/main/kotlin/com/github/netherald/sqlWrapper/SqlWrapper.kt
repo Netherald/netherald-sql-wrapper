@@ -102,6 +102,18 @@ class SqlWrapper {
         statement.executeUpdate()
     }
 
+    fun initGuild(name: String, ownerUUID: UUID) {
+        if (sqlConnection.isClosed)
+            throw IllegalStateException("SQL Connection is Closed!")
+        val statement = sqlConnection.prepareStatement("INSERT INTO netherald.guilds(name, description, users, owner) VALUES (?, ?, ?, ?)")
+        statement.setString(1, name)
+        statement.setString(2, "A netherald guild")
+        statement.setString(3, "[\"$ownerUUID\"]")
+        statement.setString(4, ownerUUID.toString())
+
+        statement.executeUpdate()
+    }
+
     private fun getUserWithoutFriends(uuid: UUID) : User {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
