@@ -77,17 +77,26 @@ class SqlWrapper {
         val result = statement.executeQuery()
 
         while (result.next()) {
-            val list = JSONParser().parse(result.getString("friends")) as JsonArray
+            val list = JSONParser().parse(result.getString("friends")) as JSONArray
             val listParsed = ArrayList<User>()
             for (str in list) {
                 listParsed.add(getUserWithoutFriends(UUID.fromString(str.toString())))
             }
-            return User(uuid.toString(), getGuild(result.getInt("guild")), listParsed)
+            return User(uuid.toString(), if (result.getInt("guild") == 0) null else getGuild(result.getInt("guild")), listParsed)
         }
         throw IllegalAccessException("No user found!")
     }
 
-    fun getUserWithoutFriends(uuid: UUID) : User {
+    private fun createUser(uuid: UUID, guild: Int, friendsJson: String) {
+        if (sqlConnection.isClosed)
+            throw IllegalStateException("SQL Connection is Closed!")
+        val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.users WHERE uuid=?")
+        statement.setString(1, uuid.toString())
+
+        val result = statement.executeQuery()
+    }
+
+    private fun getUserWithoutFriends(uuid: UUID) : User {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
         val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.users WHERE uuid=?")
