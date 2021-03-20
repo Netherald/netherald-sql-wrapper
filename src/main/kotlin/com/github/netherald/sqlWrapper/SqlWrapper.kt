@@ -87,13 +87,19 @@ class SqlWrapper {
         throw IllegalAccessException("No user found!")
     }
 
+    fun initUser(uuid: UUID) {
+        createUser(uuid, 0, "[]")
+    }
+
     private fun createUser(uuid: UUID, guild: Int, friendsJson: String) {
         if (sqlConnection.isClosed)
             throw IllegalStateException("SQL Connection is Closed!")
-        val statement = sqlConnection.prepareStatement("SELECT * FROM netherald.users WHERE uuid=?")
+        val statement = sqlConnection.prepareStatement("INSERT INTO netherald.users VALUES (?, ?, ?)")
         statement.setString(1, uuid.toString())
+        statement.setInt(2, guild)
+        statement.setString(3, friendsJson)
 
-        val result = statement.executeQuery()
+        statement.executeUpdate()
     }
 
     private fun getUserWithoutFriends(uuid: UUID) : User {
